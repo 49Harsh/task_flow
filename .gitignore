@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+dist/
+coverage/
+out/
+
+# Local environment
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# Tooling and local services
+*.log
+*.tsbuildinfo
+.vercel/
+.idea/
+.vscode/
+.mongodb-data/
+test-results/
+playwright-report/
+
+# Operating systems
+.DS_Store
+Thumbs.db
