@@ -31,10 +31,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const savedTheme = (localStorage.getItem('taskflow_theme') as Theme) || 'light';
+    // Clear stale mock data so fresh data loads on next login
+    localStorage.removeItem('taskflow_mock_tasks');
+    localStorage.removeItem('taskflow_mock_labels');
+    localStorage.removeItem('taskflow_mock_projects');
+    // Reset theme to light
+    localStorage.setItem('taskflow_theme', 'light');
+
     const savedAccent = localStorage.getItem('taskflow_accent') || DEFAULT_ACCENT_COLOR;
 
-    setThemeState(savedTheme);
+    setThemeState('light');
     setAccentColorState(savedAccent);
     setMounted(true);
   }, []);

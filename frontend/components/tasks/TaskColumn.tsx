@@ -41,8 +41,11 @@ export function TaskColumn({
     setIsDragOver(true);
   };
 
-  const handleDragLeave = () => {
-    setIsDragOver(false);
+  const handleDragLeave = (e: React.DragEvent) => {
+    // Only clear if leaving the column itself
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragOver(false);
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -63,41 +66,39 @@ export function TaskColumn({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`flex flex-col w-80 shrink-0 bg-[var(--background)] border border-[var(--card-border)] rounded-xl p-3 max-h-full transition-colors ${
-        isDragOver ? 'border-[var(--accent-color)] ring-2 ring-[var(--accent-color)]/20' : ''
+      className={`flex flex-col w-72 shrink-0 rounded-xl transition-colors ${
+        isDragOver
+          ? 'bg-[var(--card-border)]'
+          : 'bg-[var(--column-bg)]'
       }`}
     >
       {/* Column Header */}
-      <div className="flex items-center justify-between pb-3 mb-2 border-b border-[var(--card-border)]">
-        <div className="flex items-center space-x-2">
-          <GripVertical className="w-4 h-4 text-[var(--muted-text)] cursor-grab" />
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">
-            {title}
-          </h3>
-          <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-[var(--card-bg)] text-[var(--muted-text)] border border-[var(--card-border)]">
-            {tasks.length}
-          </span>
+      <div className="flex items-center justify-between px-3 pt-3 pb-2">
+        <div className="flex items-center gap-2">
+          <GripVertical className="w-4 h-4 text-[var(--muted-text)] cursor-grab shrink-0" />
+          <span className="text-xs font-semibold text-[var(--foreground)]">{title}</span>
+          <span className="text-xs text-[var(--muted-text)] font-medium">{tasks.length}</span>
         </div>
 
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center gap-0.5">
           <button
             onClick={() => setIsAdding(true)}
-            className="p-1 rounded text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--card-bg)] transition-colors"
-            title="Quick Add Task"
+            className="p-1 rounded text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            title="Add Task"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
           </button>
           <button
-            className="p-1 rounded text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--card-bg)] transition-colors"
+            className="p-1 rounded text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             title="Column Options"
           >
-            <MoreHorizontal className="w-4 h-4" />
+            <MoreHorizontal className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Column Cards Container */}
-      <div className="flex-1 overflow-y-auto space-y-3 pr-1 min-h-[150px]">
+      {/* Cards */}
+      <div className="flex-1 overflow-y-auto px-2 space-y-2 min-h-[80px]">
         {tasks.map((task) => (
           <TaskCard
             key={task.id}
@@ -107,50 +108,46 @@ export function TaskColumn({
             onDragStart={handleDragStart}
           />
         ))}
-
-        {tasks.length === 0 && !isAdding && (
-          <div className="flex flex-col items-center justify-center py-8 text-center border-2 border-dashed border-[var(--card-border)] rounded-lg text-[var(--muted-text)] text-xs">
-            No tasks in {title}
-          </div>
-        )}
       </div>
 
-      {/* Quick Add Form or Bottom Add Task Row */}
-      {isAdding ? (
-        <form onSubmit={handleQuickAdd} className="mt-3 pt-2 border-t border-[var(--card-border)]">
+      {/* Quick Add Form */}
+      {isAdding && (
+        <form onSubmit={handleQuickAdd} className="px-2 pt-2">
           <input
             type="text"
-            placeholder="Enter task title..."
+            placeholder="Task title..."
             value={quickTitle}
             onChange={(e) => setQuickTitle(e.target.value)}
             autoFocus
-            className="w-full px-3 py-1.5 text-xs bg-[var(--card-bg)] border border-[var(--card-border)] rounded-md text-[var(--foreground)] focus:outline-none focus:border-[var(--accent-color)] mb-2"
+            onKeyDown={(e) => e.key === 'Escape' && setIsAdding(false)}
+            className="w-full px-2.5 py-1.5 text-xs bg-[var(--card-bg)] border border-[var(--card-border)] rounded-md text-[var(--foreground)] placeholder-[var(--muted-text)] focus:outline-none focus:border-[var(--accent-color)] mb-1.5"
           />
-          <div className="flex items-center justify-end space-x-2">
+          <div className="flex items-center justify-end gap-2">
             <button
               type="button"
-              onClick={() => setIsAdding(false)}
-              className="px-2.5 py-1 text-xs text-[var(--muted-text)] hover:text-[var(--foreground)]"
+              onClick={() => { setIsAdding(false); setQuickTitle(''); }}
+              className="text-xs text-[var(--muted-text)] hover:text-[var(--foreground)] py-0.5"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-3 py-1 text-xs font-medium accent-bg text-white rounded-md hover:opacity-90"
+              className="px-2.5 py-1 text-xs font-medium accent-bg text-white rounded-md hover:opacity-90"
             >
               Add
             </button>
           </div>
         </form>
-      ) : (
-        <button
-          onClick={() => onAddTask(status)}
-          className="w-full mt-3 flex items-center justify-center space-x-1.5 py-2 text-xs font-medium text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--card-bg)] border border-dashed border-[var(--card-border)] rounded-lg transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Task</span>
-        </button>
       )}
+
+      {/* Add Task Footer */}
+      <button
+        onClick={() => onAddTask(status)}
+        className="flex items-center gap-1.5 px-3 py-2.5 text-xs text-[var(--muted-text)] hover:text-[var(--foreground)] transition-colors w-full"
+      >
+        <Plus className="w-3.5 h-3.5" />
+        <span>Add Task</span>
+      </button>
     </div>
   );
 }

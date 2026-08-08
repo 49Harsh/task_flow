@@ -12,7 +12,7 @@ export default function LandingPage() {
   const handleGuestLogin = async () => {
     setLoading(true);
     try {
-      await guestLogin('Dexter Guest');
+      await guestLogin('Admin');
       router.push('/tasks');
     } catch (e) {
       console.error('Guest login failed:', e);

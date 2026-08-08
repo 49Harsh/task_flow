@@ -27,9 +27,11 @@ export function TaskBoard({
   onDropTask,
 }: TaskBoardProps) {
   return (
-    <div className="flex space-x-4 overflow-x-auto pb-6 h-[calc(100vh-13rem)] items-start">
+    <div className="flex gap-3 overflow-x-auto pb-4 items-start">
       {COLUMNS.map((col) => {
-        const columnTasks = tasks.filter((t) => t.status === col.status);
+        const columnTasks = tasks
+          .filter((t) => t.status === col.status)
+          .sort((a, b) => a.position - b.position);
         return (
           <TaskColumn
             key={col.status}
