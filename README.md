@@ -150,3 +150,19 @@ Open `http://localhost:3000` in your browser.
 1. **Real-time Collaboration**: Currently relies on API polling/re-fetching. Future iterations could integrate WebSockets (Socket.io) for live multi-user card drag synchronization.
 2. **File Attachments Storage**: Links currently accept URLs; cloud blob storage (AWS S3 / Uploadthing) can be hooked up for file uploads.
 3. **Advanced Analytics**: Adding sprint burndown charts and velocity metrics under Projects.
+
+---
+
+## 📋 Part 2 — AbleSpace Product Understanding Walkthrough
+
+The detailed Part 2 analysis document for AbleSpace Caseload & Take Data screen workflows is available here:
+👉 **[AbleSpace Walkthrough Document](./part-2/ablespace-walkthrough.md)**
+
+### Key Highlights Covered in Walkthrough:
+1. **Target Audience & Core Problem Solved**: Special Education Teachers, Speech SLPs, and BCBAs digitizing IEP trial data.
+2. **Step-by-Step Workflow**: Caseload selection → Take Data screen → Trial Accuracy / Frequency / Duration metric selection → Real-time tally input → Auto-graphing.
+3. **4 Concrete UX & Functionality Improvements**:
+   - One-tap large target area & haptic vibration for mobile/tablet trials.
+   - Multi-student group session parallel data collection grid.
+   - Voice-assisted hands-free trial logging for sensory gym & physical therapy sessions.
+   - Automatic baseline anomaly & regression detection alerts.
