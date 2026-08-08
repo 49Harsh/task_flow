@@ -23,9 +23,11 @@ export default function LandingPage() {
     }
   };
 
-  if (user) {
-    router.push('/tasks');
-  }
+  React.useEffect(() => {
+    if (user) {
+      router.push('/tasks');
+    }
+  }, [user, router]);
 
   return (
     <main className="min-h-screen flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden bg-slate-950 text-white">
