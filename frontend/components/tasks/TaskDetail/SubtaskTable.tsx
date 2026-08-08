@@ -70,7 +70,7 @@ export function SubtaskTable({ subtasks = [], onAddSubtask, onDeleteSubtask }: S
                     ? new Date(s.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
                     : '—';
                   return (
-                    <tr key={s.id} className="border-b border-[var(--card-border)] last:border-0 hover:bg-[var(--column-bg)] transition-colors">
+                    <tr key={s.id} className="border-b border-[var(--card-border)] last:border-0 hover:bg-[var(--hover-bg)] transition-colors">
                       <td className="py-2.5 px-4 font-medium text-[var(--foreground)]">{s.title}</td>
                       <td className="py-2.5 px-4">
                         <span className="inline-flex items-center gap-1" style={{ color: p.color }}>

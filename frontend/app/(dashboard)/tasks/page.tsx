@@ -132,7 +132,7 @@ export default function TasksPage() {
           ) : (
             <button
               onClick={() => setSearchOpen(true)}
-              className="p-1.5 rounded-md text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-md text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
               title="Search"
             >
               <Search className="w-4 h-4" />

@@ -77,8 +77,8 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
                       href={item.href}
                       className={`flex items-center gap-2.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                         isActive
-                          ? 'bg-slate-100 dark:bg-slate-800 text-[var(--foreground)]'
-                          : 'text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800'
+                          ? 'bg-[var(--hover-bg-strong)] text-[var(--foreground)]'
+                          : 'text-[var(--foreground)] hover:bg-[var(--hover-bg)]'
                       }`}
                     >
                       <Icon className="w-4 h-4 shrink-0 text-[var(--muted-text)]" />
@@ -104,8 +104,8 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
                   title={item.label}
                   className={`flex items-center justify-center p-2.5 rounded-md transition-colors ${
                     isActive
-                      ? 'bg-slate-100 dark:bg-slate-800 text-[var(--foreground)]'
-                      : 'text-[var(--muted-text)] hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ? 'bg-[var(--hover-bg)] text-[var(--foreground)]'
+                      : 'text-[var(--muted-text)] hover:bg-[var(--hover-bg)]'
                   }`}
                 >
                   <Icon className="w-4.5 h-4.5" />
@@ -122,7 +122,7 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
           onClick={toggleTheme}
           className={`w-full flex items-center ${
             collapsed ? 'justify-center p-2.5' : 'gap-2.5 px-3 py-1.5'
-          } rounded-md text-sm text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors`}
+          } rounded-md text-sm text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors`}
           title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
         >
           {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400 shrink-0" /> : <Moon className="w-4 h-4 shrink-0" />}

@@ -22,7 +22,7 @@ export function TaskListRow({ task, fields, onDelete }: TaskListRowProps) {
   };
 
   return (
-    <tr className="border-b border-[var(--card-border)] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+    <tr className="border-b border-[var(--card-border)] hover:bg-[var(--hover-bg)] transition-colors group">
       {/* Task Title Column */}
       <td className="py-3 px-4">
         <Link
@@ -88,7 +88,7 @@ export function TaskListRow({ task, fields, onDelete }: TaskListRowProps) {
       <td className="py-3 px-4 text-right">
         <Dropdown
           trigger={
-            <button className="p-1 rounded text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-slate-200 dark:hover:bg-slate-700">
+            <button className="p-1 rounded text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)]">
               <MoreHorizontal className="w-4 h-4" />
             </button>
           }

@@ -29,7 +29,7 @@ export function FilterPanel({
           className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium border rounded-md transition-colors ${
             hasActiveFilter
               ? 'accent-bg text-white border-transparent'
-              : 'bg-[var(--card-bg)] border-[var(--card-border)] text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800'
+              : 'bg-[var(--card-bg)] border-[var(--card-border)] text-[var(--foreground)] hover:bg-[var(--hover-bg)]'
           }`}
         >
           <Filter className="w-3.5 h-3.5" />

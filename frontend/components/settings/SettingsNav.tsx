@@ -49,7 +49,7 @@ export function SettingsNav() {
               className={`flex items-center space-x-3 px-3 py-2 rounded-md text-xs font-semibold transition-colors ${
                 isActive
                   ? 'accent-bg text-white shadow-xs'
-                  : 'text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800'
+                  : 'text-[var(--foreground)] hover:bg-[var(--hover-bg)]'
               }`}
             >
               <Icon className="w-4 h-4" />

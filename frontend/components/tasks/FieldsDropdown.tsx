@@ -30,7 +30,7 @@ export function FieldsDropdown({ fields, onChange }: FieldsDropdownProps) {
   return (
     <Dropdown
       trigger={
-        <div className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium bg-[var(--card-bg)] border border-[var(--card-border)] rounded-md text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+        <div className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium bg-[var(--card-bg)] border border-[var(--card-border)] rounded-md text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors">
           <SlidersHorizontal className="w-3.5 h-3.5 text-[var(--muted-text)]" />
           <span>Fields</span>
         </div>
@@ -43,7 +43,7 @@ export function FieldsDropdown({ fields, onChange }: FieldsDropdownProps) {
         {fieldList.map((f) => (
           <label
             key={f.key}
-            className="flex items-center space-x-2.5 px-2 py-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer text-xs text-[var(--foreground)]"
+            className="flex items-center space-x-2.5 px-2 py-1.5 rounded hover:bg-[var(--hover-bg)] cursor-pointer text-xs text-[var(--foreground)]"
           >
             <input
               type="checkbox"

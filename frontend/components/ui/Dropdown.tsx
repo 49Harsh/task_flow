@@ -57,7 +57,7 @@ export function Dropdown({ trigger, items, children, align = 'right' }: Dropdown
                   className={`w-full flex items-center px-4 py-2 text-sm text-left transition-colors ${
                     item.danger
                       ? 'text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30'
-                      : 'text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800'
+                      : 'text-[var(--foreground)] hover:bg-[var(--hover-bg)]'
                   }`}
                 >
                   {item.icon && <span className="mr-2 text-[var(--muted-text)]">{item.icon}</span>}

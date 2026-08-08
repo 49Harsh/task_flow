@@ -49,7 +49,7 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = 'md' }: Mod
             <h3 className="text-lg font-semibold text-[var(--foreground)]">{title}</h3>
             <button
               onClick={onClose}
-              className="p-1 rounded-md text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1 rounded-md text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

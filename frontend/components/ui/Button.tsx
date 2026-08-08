@@ -25,9 +25,9 @@ export function Button({
 
   const variantStyles = {
     primary: 'accent-bg text-white hover:opacity-90 shadow-xs',
-    secondary: 'bg-slate-100 text-slate-800 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700',
-    outline: 'border border-[var(--card-border)] bg-transparent text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800',
-    ghost: 'bg-transparent text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-slate-100 dark:hover:bg-slate-800',
+    secondary: 'bg-[var(--hover-bg-strong)] text-[var(--foreground)] hover:bg-[var(--hover-bg-strong)]',
+    outline: 'border border-[var(--card-border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--hover-bg)]',
+    ghost: 'bg-transparent text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)]',
     danger: 'bg-rose-600 text-white hover:bg-rose-700 shadow-xs',
   };
 

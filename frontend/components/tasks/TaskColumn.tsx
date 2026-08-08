@@ -83,13 +83,13 @@ export function TaskColumn({
         <div className="flex items-center gap-0.5">
           <button
             onClick={() => setIsAdding(true)}
-            className="p-1 rounded text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            className="p-1 rounded text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
             title="Add Task"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
           <button
-            className="p-1 rounded text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            className="p-1 rounded text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] transition-colors"
             title="Column Options"
           >
             <MoreHorizontal className="w-3.5 h-3.5" />

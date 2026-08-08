@@ -132,7 +132,7 @@ export function TaskListGroup({
           ) : (
             <div
               onClick={() => setIsAdding(true)}
-              className="px-4 py-2 text-xs text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer flex items-center gap-1.5 border-t border-[var(--card-border)]"
+              className="px-4 py-2 text-xs text-[var(--muted-text)] hover:text-[var(--foreground)] hover:bg-[var(--hover-bg)] cursor-pointer flex items-center gap-1.5 border-t border-[var(--card-border)]"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Task</span>

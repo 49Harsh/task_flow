@@ -115,7 +115,7 @@ export function DetailsSidebar({
                   <button
                     key={s}
                     onClick={() => { onStatusChange(s); setShowStatusMenu(false); }}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--column-bg)] text-[var(--foreground)]"
+                    className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--hover-bg)] text-[var(--foreground)]"
                   >
                     <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: STATUS_DOT[s] }} />
                     {STATUS_LABEL[s]}
@@ -146,7 +146,7 @@ export function DetailsSidebar({
                 {/* No Priority option */}
                 <button
                   onClick={() => { onPriorityChange('low'); setShowPriorityMenu(false); }}
-                  className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--column-bg)] text-[var(--muted-text)]"
+                  className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--hover-bg)] text-[var(--muted-text)]"
                 >
                   <span className="w-3 h-3 flex items-center justify-center text-[var(--muted-text)]">·</span>
                   No Priority
@@ -157,7 +157,7 @@ export function DetailsSidebar({
                     <button
                       key={p}
                       onClick={() => { onPriorityChange(p); setShowPriorityMenu(false); }}
-                      className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--column-bg)]"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--hover-bg)]"
                       style={{ color: cfg.color }}
                     >
                       <PriorityIcon priority={p} size={12} />

@@ -6,6 +6,8 @@
   --card-bg: #ffffff;
   --card-border: #e2e8f0;
   --column-bg: #f1f5f9;
+  --hover-bg: #f1f5f9;
+  --hover-bg-strong: #e2e8f0;
   --sidebar-bg: #ffffff;
   --sidebar-border: #e2e8f0;
   --muted-text: #64748b;
@@ -19,6 +21,8 @@
   --card-bg: #1e293b;
   --card-border: #334155;
   --column-bg: #162032;
+  --hover-bg: #1e2d40;
+  --hover-bg-strong: #253650;
   --sidebar-bg: #1e293b;
   --sidebar-border: #334155;
   --muted-text: #94a3b8;
@@ -46,6 +50,17 @@ body {
 .accent-ring:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.4);
+}
+
+/* Consistent hover utility — use instead of hover:bg-slate-* */
+.hover-item {
+  transition: background-color 0.15s, color 0.15s;
+}
+.hover-item:hover {
+  background-color: var(--hover-bg);
+}
+.hover-item-strong:hover {
+  background-color: var(--hover-bg-strong);
 }
 
 /* Custom Scrollbar */
