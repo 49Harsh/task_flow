@@ -96,3 +96,23 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+## Keep-Alive for Render Free Tier
+
+This backend includes a self-ping mechanism to prevent Render's free tier from spinning down due to inactivity.
+
+**How it works:**
+- Every 5 minutes, the backend pings itself at `/health/ping`
+- This keeps the instance active and responsive
+
+**Environment Variables:**
+```bash
+BACKEND_URL=https://your-app.onrender.com
+```
+
+Set `BACKEND_URL` to your deployed Render URL in production. The health check endpoints are:
+- `GET /health` - Returns app status and uptime
+- `GET /health/ping` - Lightweight ping endpoint
+
+**Note:** These endpoints are public (no auth required) for monitoring purposes.

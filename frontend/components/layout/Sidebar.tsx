@@ -35,12 +35,14 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
       {/* Workspace Header */}
       <div className={`flex items-center gap-2.5 px-4 py-3.5 border-b border-[var(--sidebar-border)] ${collapsed ? 'justify-center' : ''}`}>
         {collapsed ? (
-          <div className="w-7 h-7 rounded-md accent-bg flex items-center justify-center text-white font-bold text-sm shadow-xs">
+          <Link href="/settings/profile" className="w-7 h-7 rounded-md accent-bg flex items-center justify-center text-white font-bold text-sm shadow-xs">
             {workspaceName[0]?.toUpperCase() || 'W'}
-          </div>
+          </Link>
         ) : (
           <>
-            <Avatar name={workspaceName} src={workspace?.avatarUrl} size="sm" />
+            <Link href="/settings/profile">
+              <Avatar name={workspaceName} src={workspace?.avatarUrl} size="sm" />
+            </Link>
             <div className="flex-1 min-w-0">
               <span className="text-sm font-semibold text-[var(--foreground)] truncate block leading-tight">
                 {user?.fullName?.split(' ')[0] || workspaceName}

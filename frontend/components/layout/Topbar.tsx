@@ -1,6 +1,7 @@
 'use client';
 
-import { LayoutTemplate, Menu } from 'lucide-react';
+import { LayoutTemplate } from 'lucide-react';
+import Link from 'next/link';
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar } from '../ui/Avatar';
@@ -25,9 +26,9 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
       </div>
 
       {user && (
-        <div className="flex items-center gap-2">
+        <Link href="/settings/profile" className="flex items-center gap-2">
           <Avatar name={user.fullName} src={user.avatarUrl} size="sm" />
-        </div>
+        </Link>
       )}
     </header>
   );
