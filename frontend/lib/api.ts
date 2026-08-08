@@ -165,6 +165,12 @@ const INITIAL_MOCK_TASKS: Task[] = [
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = getAuthToken();
+
+  // If operating in mock session mode, bypass network fetch to avoid browser ERR_CONNECTION_REFUSED logs
+  if (token?.startsWith('mock-')) {
+    return handleOfflineFallback<T>(endpoint, options);
+  }
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
@@ -188,8 +194,6 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
     return await res.json();
   } catch (err: any) {
-    // If backend server is unreachable or offline, log warning and use smooth mock fallback
-    console.warn(`[TaskFlow API] Network request to ${endpoint} failed. Using local storage fallback.`, err?.message);
     return handleOfflineFallback<T>(endpoint, options);
   }
 }
