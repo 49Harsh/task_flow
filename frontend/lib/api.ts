@@ -1,6 +1,6 @@
 import { Comment, Label, Project, Subtask, Task, TaskPriority, TaskStatus, User, Workspace } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://task-flow-eofi.onrender.com';
 
 function getAuthToken(): string | null {
   if (typeof window === 'undefined') return null;
