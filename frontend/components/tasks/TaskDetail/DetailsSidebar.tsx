@@ -1,146 +1,243 @@
 'use client';
 
-import { Calendar, Plus, Settings, Tag, User, Users } from 'lucide-react';
-import React from 'react';
-import { TaskPriority, TaskStatus, User as UserType } from '../../../lib/types';
+import { Check, ChevronDown, Plus, Settings } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Label, TaskPriority, TaskStatus, User as UserType } from '../../../lib/types';
 import { Avatar } from '../../ui/Avatar';
 
+// ── colour maps ────────────────────────────────────────────────────────────────
+const STATUS_DOT: Record<TaskStatus, string> = {
+  todo:      '#94a3b8',
+  doing:     '#f59e0b',
+  completed: '#10b981',
+  on_hold:   '#8b5cf6',
+  backlog:   '#f26b38',
+};
+const STATUS_LABEL: Record<TaskStatus, string> = {
+  todo: 'To Do', doing: 'Doing', completed: 'Completed', on_hold: 'On Hold', backlog: 'Backlog',
+};
+
+const PRIORITY_CFG: Record<TaskPriority, { label: string; color: string }> = {
+  urgent: { label: 'Urgent', color: '#ef4444' },
+  high:   { label: 'High',   color: '#f97316' },
+  medium: { label: 'Medium', color: '#f59e0b' },
+  low:    { label: 'Low',    color: '#94a3b8' },
+};
+
+// ── tiny bar-chart icon for priority ──────────────────────────────────────────
+function PriorityIcon({ priority, size = 14 }: { priority: TaskPriority; size?: number }) {
+  const { color } = PRIORITY_CFG[priority];
+  const bars: Record<TaskPriority, [number, number, number]> = {
+    urgent: [10, 7, 4], high: [10, 7, 4], medium: [7, 7, 4], low: [4, 4, 4],
+  };
+  const [h1, h2, h3] = bars[priority];
+  return (
+    <svg width={size} height={size} viewBox="0 0 12 12" fill="none">
+      <rect x="0" y={12 - h1} width="3" height={h1} rx="0.5" fill={color} />
+      <rect x="4.5" y={12 - h2} width="3" height={h2} rx="0.5" fill={color} opacity="0.7" />
+      <rect x="9" y={12 - h3} width="3" height={h3} rx="0.5" fill={color} opacity="0.4" />
+    </svg>
+  );
+}
+
+// ── row wrapper ────────────────────────────────────────────────────────────────
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-start justify-between gap-2 py-2.5 border-b border-[var(--card-border)] last:border-0">
+      <span className="text-xs text-[var(--muted-text)] w-20 shrink-0 pt-0.5">{label}</span>
+      <div className="flex-1 flex items-center justify-end">{children}</div>
+    </div>
+  );
+}
+
+// ── props ──────────────────────────────────────────────────────────────────────
 interface DetailsSidebarProps {
   status: TaskStatus;
   priority: TaskPriority;
   dueDate?: string;
   reporter?: UserType;
   members?: UserType[];
+  labels?: Label[];
   teams?: string[];
-  onStatusChange: (status: TaskStatus) => void;
-  onPriorityChange: (priority: TaskPriority) => void;
-  onDueDateChange: (date: string) => void;
+  onStatusChange: (s: TaskStatus) => void;
+  onPriorityChange: (p: TaskPriority) => void;
+  onDueDateChange: (d: string) => void;
 }
 
 export function DetailsSidebar({
-  status,
-  priority,
-  dueDate,
-  reporter,
-  members = [],
-  teams = [],
-  onStatusChange,
-  onPriorityChange,
-  onDueDateChange,
+  status, priority, dueDate, reporter, members = [], labels = [], teams = [],
+  onStatusChange, onPriorityChange, onDueDateChange,
 }: DetailsSidebarProps) {
+  const [showPriorityMenu, setShowPriorityMenu] = useState(false);
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const priorityRef = useRef<HTMLDivElement>(null);
+  const statusRef   = useRef<HTMLDivElement>(null);
+
+  // close on outside click
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (priorityRef.current && !priorityRef.current.contains(e.target as Node)) setShowPriorityMenu(false);
+      if (statusRef.current   && !statusRef.current.contains(e.target as Node))   setShowStatusMenu(false);
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const pc = PRIORITY_CFG[priority];
+
   return (
-    <div className="w-full lg:w-72 bg-[var(--card-bg)] border-l border-[var(--card-border)] p-4 space-y-6">
-      {/* Panel Top Header */}
-      <div className="flex items-center justify-between border-b border-[var(--card-border)] pb-3">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">
-          Details
-        </h4>
-        <div className="flex items-center space-x-1 text-[var(--muted-text)]">
-          <button className="p-1 rounded hover:text-[var(--foreground)]" title="Add Field">
-            <Plus className="w-4 h-4" />
-          </button>
-          <button className="p-1 rounded hover:text-[var(--foreground)]" title="Configure Fields">
-            <Settings className="w-4 h-4" />
-          </button>
+    <aside className="w-full lg:w-64 shrink-0 border-l border-[var(--card-border)] p-4 bg-[var(--card-bg)]">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-3 pb-3 border-b border-[var(--card-border)]">
+        <span className="text-xs font-semibold text-[var(--foreground)]">Details</span>
+        <div className="flex items-center gap-0.5 text-[var(--muted-text)]">
+          <button className="p-1 rounded hover:text-[var(--foreground)]"><Plus className="w-3.5 h-3.5" /></button>
+          <button className="p-1 rounded hover:text-[var(--foreground)]"><Settings className="w-3.5 h-3.5" /></button>
         </div>
       </div>
 
-      {/* Field Items */}
-      <div className="space-y-4 text-xs">
-        {/* Status Dropdown */}
-        <div className="space-y-1">
-          <label className="text-[11px] font-semibold text-[var(--muted-text)] uppercase tracking-wider">
-            Status
-          </label>
-          <select
-            value={status}
-            onChange={(e) => onStatusChange(e.target.value as TaskStatus)}
-            className="w-full px-3 py-1.5 bg-[var(--background)] border border-[var(--card-border)] rounded-md text-[var(--foreground)] font-medium focus:outline-none focus:border-[var(--accent-color)]"
-          >
-            <option value="todo">To Do</option>
-            <option value="doing">Doing</option>
-            <option value="completed">Completed</option>
-            <option value="on_hold">On Hold</option>
-            <option value="backlog">Backlog</option>
-          </select>
-        </div>
+      {/* Rows */}
+      <div>
+        {/* Status */}
+        <Row label="Status">
+          <div ref={statusRef} className="relative">
+            <button
+              onClick={() => setShowStatusMenu((p) => !p)}
+              className="flex items-center gap-1.5 text-xs font-medium text-[var(--foreground)] hover:opacity-80"
+            >
+              <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: STATUS_DOT[status] }} />
+              {STATUS_LABEL[status]}
+            </button>
+            {showStatusMenu && (
+              <div className="absolute right-0 top-6 z-50 w-40 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-lg py-1 text-xs">
+                <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted-text)]">Status</div>
+                {(Object.keys(STATUS_LABEL) as TaskStatus[]).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => { onStatusChange(s); setShowStatusMenu(false); }}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--column-bg)] text-[var(--foreground)]"
+                  >
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: STATUS_DOT[s] }} />
+                    {STATUS_LABEL[s]}
+                    {s === status && <Check className="w-3 h-3 ml-auto text-[var(--accent-color)]" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </Row>
 
-        {/* Priority Dropdown */}
-        <div className="space-y-1">
-          <label className="text-[11px] font-semibold text-[var(--muted-text)] uppercase tracking-wider">
-            Priority
-          </label>
-          <select
-            value={priority}
-            onChange={(e) => onPriorityChange(e.target.value as TaskPriority)}
-            className="w-full px-3 py-1.5 bg-[var(--background)] border border-[var(--card-border)] rounded-md text-[var(--foreground)] font-medium focus:outline-none focus:border-[var(--accent-color)]"
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="urgent">Urgent</option>
-          </select>
-        </div>
+        {/* Priority */}
+        <Row label="Priority">
+          <div ref={priorityRef} className="relative">
+            <button
+              onClick={() => setShowPriorityMenu((p) => !p)}
+              className="flex items-center gap-1.5 text-xs font-medium hover:opacity-80"
+              style={{ color: pc.color }}
+            >
+              <PriorityIcon priority={priority} />
+              {pc.label}
+              <ChevronDown className="w-3 h-3 text-[var(--muted-text)]" />
+            </button>
 
-        {/* Due Date */}
-        <div className="space-y-1">
-          <label className="text-[11px] font-semibold text-[var(--muted-text)] uppercase tracking-wider flex items-center gap-1">
-            <Calendar className="w-3 h-3" /> Due Date
-          </label>
+            {showPriorityMenu && (
+              <div className="absolute right-0 top-6 z-50 w-44 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl shadow-lg py-1 text-xs">
+                <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--muted-text)]">Priority</div>
+                {/* No Priority option */}
+                <button
+                  onClick={() => { onPriorityChange('low'); setShowPriorityMenu(false); }}
+                  className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--column-bg)] text-[var(--muted-text)]"
+                >
+                  <span className="w-3 h-3 flex items-center justify-center text-[var(--muted-text)]">·</span>
+                  No Priority
+                </button>
+                {(Object.keys(PRIORITY_CFG) as TaskPriority[]).map((p) => {
+                  const cfg = PRIORITY_CFG[p];
+                  return (
+                    <button
+                      key={p}
+                      onClick={() => { onPriorityChange(p); setShowPriorityMenu(false); }}
+                      className="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--column-bg)]"
+                      style={{ color: cfg.color }}
+                    >
+                      <PriorityIcon priority={p} size={12} />
+                      {cfg.label}
+                      {p === priority && <Check className="w-3 h-3 ml-auto" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </Row>
+
+        {/* Members */}
+        <Row label="Members">
+          <div className="flex items-center -space-x-1.5">
+            {members.length > 0 ? (
+              members.map((m) => <Avatar key={m.id} name={m.fullName} src={m.avatarUrl} size="sm" />)
+            ) : (
+              <span className="text-xs text-[var(--muted-text)]">—</span>
+            )}
+          </div>
+        </Row>
+
+        {/* Dates */}
+        <Row label="Dates">
           <input
             type="date"
             value={dueDate ? new Date(dueDate).toISOString().split('T')[0] : ''}
             onChange={(e) => onDueDateChange(e.target.value)}
-            className="w-full px-3 py-1.5 bg-[var(--background)] border border-[var(--card-border)] rounded-md text-[var(--foreground)] font-medium"
+            className="text-xs bg-transparent text-[var(--foreground)] border-none focus:outline-none cursor-pointer"
           />
-        </div>
+        </Row>
 
-        {/* Reporter */}
-        <div className="space-y-1">
-          <label className="text-[11px] font-semibold text-[var(--muted-text)] uppercase tracking-wider flex items-center gap-1">
-            <User className="w-3 h-3" /> Reporter
-          </label>
-          <div className="flex items-center space-x-2 pt-1">
-            <Avatar name={reporter?.fullName || 'Reporter'} src={reporter?.avatarUrl} size="sm" />
-            <span className="font-medium text-[var(--foreground)]">{reporter?.fullName || 'System'}</span>
-          </div>
-        </div>
-
-        {/* Members */}
-        <div className="space-y-1">
-          <label className="text-[11px] font-semibold text-[var(--muted-text)] uppercase tracking-wider flex items-center gap-1">
-            <Users className="w-3 h-3" /> Members
-          </label>
-          <div className="flex items-center -space-x-1.5 pt-1">
-            {members.length > 0 ? (
-              members.map((m) => <Avatar key={m.id} name={m.fullName} src={m.avatarUrl} size="sm" />)
+        {/* Labels */}
+        <Row label="Labels">
+          <div className="flex flex-wrap gap-1 justify-end">
+            {labels.length > 0 ? (
+              labels.map((lbl, i) => (
+                <span
+                  key={`${lbl.id}-${i}`}
+                  className="px-1.5 py-0.5 rounded text-[10px] font-medium text-white"
+                  style={{ backgroundColor: lbl.color }}
+                >
+                  {lbl.name}
+                </span>
+              ))
             ) : (
-              <span className="text-[var(--muted-text)] italic">No members assigned</span>
+              <span className="text-xs text-[var(--muted-text)]">—</span>
             )}
           </div>
-        </div>
+        </Row>
 
         {/* Teams */}
-        <div className="space-y-1">
-          <label className="text-[11px] font-semibold text-[var(--muted-text)] uppercase tracking-wider">
-            Teams
-          </label>
-          <div className="flex flex-wrap gap-1 pt-1">
+        <Row label="Teams">
+          <div className="flex flex-wrap gap-1 justify-end">
             {teams.length > 0 ? (
-              teams.map((t, idx) => (
-                <span
-                  key={idx}
-                  className="px-2 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-[var(--foreground)] border border-[var(--card-border)]"
-                >
+              teams.map((t, i) => (
+                <span key={i} className="px-2 py-0.5 rounded text-[10px] bg-[var(--column-bg)] text-[var(--foreground)]">
                   {t}
                 </span>
               ))
             ) : (
-              <span className="text-[var(--muted-text)] italic">Frontend Engineering</span>
+              <span className="text-xs text-[var(--muted-text)]">—</span>
             )}
           </div>
-        </div>
+        </Row>
+
+        {/* Reporter */}
+        <Row label="Reporter">
+          {reporter ? (
+            <div className="flex items-center gap-1.5">
+              <Avatar name={reporter.fullName} src={reporter.avatarUrl} size="sm" />
+              <span className="text-xs text-[var(--foreground)]">{reporter.fullName}</span>
+            </div>
+          ) : (
+            <span className="text-xs text-[var(--muted-text)]">—</span>
+          )}
+        </Row>
       </div>
-    </div>
+    </aside>
   );
 }

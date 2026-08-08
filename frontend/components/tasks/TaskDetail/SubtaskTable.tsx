@@ -1,10 +1,16 @@
 'use client';
 
-import { Calendar, Plus, Trash2 } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronRight, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Subtask, TaskPriority } from '../../../lib/types';
 import { Avatar } from '../../ui/Avatar';
-import { Badge } from '../../ui/Badge';
+
+const PRIORITY_ICON: Record<TaskPriority, { icon: string; color: string }> = {
+  urgent: { icon: '▲', color: '#ef4444' },
+  high:   { icon: '▲', color: '#f97316' },
+  medium: { icon: '▲', color: '#f59e0b' },
+  low:    { icon: '·', color: '#94a3b8' },
+};
 
 interface SubtaskTableProps {
   subtasks?: Subtask[];
@@ -12,20 +18,16 @@ interface SubtaskTableProps {
   onDeleteSubtask?: (id: string) => Promise<void>;
 }
 
-export function SubtaskTable({
-  subtasks = [],
-  onAddSubtask,
-  onDeleteSubtask,
-}: SubtaskTableProps) {
+export function SubtaskTable({ subtasks = [], onAddSubtask, onDeleteSubtask }: SubtaskTableProps) {
+  const [open, setOpen] = useState(true);
   const [newTitle, setNewTitle] = useState('');
   const [newPriority, setNewPriority] = useState<TaskPriority>('medium');
   const [isAdding, setIsAdding] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleAddSubmit = async (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !onAddSubtask) return;
-
     setLoading(true);
     try {
       await onAddSubtask(newTitle.trim(), newPriority);
@@ -37,124 +39,118 @@ export function SubtaskTable({
   };
 
   return (
-    <div className="my-6">
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">
-          Subtasks ({subtasks.length})
-        </h4>
-        <button
-          onClick={() => setIsAdding(true)}
-          className="flex items-center space-x-1 text-xs font-semibold accent-text hover:underline"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Add Subtask</span>
-        </button>
-      </div>
+    <div>
+      {/* Section header */}
+      <button
+        onClick={() => setOpen((p) => !p)}
+        className="flex items-center gap-1.5 text-sm font-medium text-[var(--foreground)] mb-2"
+      >
+        {open ? <ChevronDown className="w-4 h-4 text-[var(--muted-text)]" /> : <ChevronRight className="w-4 h-4 text-[var(--muted-text)]" />}
+        Subtasks
+      </button>
 
-      <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl overflow-hidden shadow-2xs">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-[var(--card-border)] bg-[var(--background)] text-[10px] uppercase tracking-wider font-semibold text-[var(--muted-text)]">
-              <th className="py-2.5 px-4">Task</th>
-              <th className="py-2.5 px-4 w-28">Priority</th>
-              <th className="py-2.5 px-4 w-24">Members</th>
-              <th className="py-2.5 px-4 w-28">Due Date</th>
-              <th className="py-2.5 px-4 w-12 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {subtasks.map((subtask) => (
-              <tr
-                key={subtask.id}
-                className="border-b border-[var(--card-border)] hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+      {open && (
+        <>
+          {/* Table */}
+          <div className="border border-[var(--card-border)] rounded-lg overflow-hidden">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="border-b border-[var(--card-border)] bg-[var(--column-bg)]">
+                  <th className="py-2 px-4 font-medium text-[var(--muted-text)]">Task</th>
+                  <th className="py-2 px-4 font-medium text-[var(--muted-text)] w-28">Priority</th>
+                  <th className="py-2 px-4 font-medium text-[var(--muted-text)] w-24">Members</th>
+                  <th className="py-2 px-4 font-medium text-[var(--muted-text)] w-32">Due Date</th>
+                  <th className="py-2 px-4 font-medium text-[var(--muted-text)] w-16 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subtasks.map((s) => {
+                  const p = PRIORITY_ICON[s.priority];
+                  const dateStr = s.dueDate
+                    ? new Date(s.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+                    : '—';
+                  return (
+                    <tr key={s.id} className="border-b border-[var(--card-border)] last:border-0 hover:bg-[var(--column-bg)] transition-colors">
+                      <td className="py-2.5 px-4 font-medium text-[var(--foreground)]">{s.title}</td>
+                      <td className="py-2.5 px-4">
+                        <span className="inline-flex items-center gap-1" style={{ color: p.color }}>
+                          <span className="text-[10px]">{p.icon}</span>
+                          <span className="capitalize font-medium">{s.priority}</span>
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-4">
+                        {s.members && s.members.length > 0 ? (
+                          <div className="flex items-center -space-x-1">
+                            {s.members.map((m) => (
+                              <Avatar key={m.id} name={m.fullName} src={m.avatarUrl} size="sm" />
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-[var(--muted-text)]">—</span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-4 text-[var(--muted-text)]">{dateStr}</td>
+                      <td className="py-2.5 px-4 text-right">
+                        <button
+                          className="p-1 text-[var(--muted-text)] hover:text-[var(--foreground)]"
+                          onClick={() => onDeleteSubtask?.(s.id)}
+                        >
+                          <MoreHorizontal className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+
+                {subtasks.length === 0 && !isAdding && (
+                  <tr>
+                    <td colSpan={5} className="py-5 text-center text-xs text-[var(--muted-text)]">
+                      No subtasks yet
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Add subtask form */}
+          {isAdding && (
+            <form onSubmit={handleAdd} className="flex items-center gap-2 mt-2">
+              <input
+                autoFocus
+                type="text"
+                placeholder="Subtask title..."
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                className="flex-1 px-3 py-1.5 text-xs bg-[var(--card-bg)] border border-[var(--card-border)] rounded-md text-[var(--foreground)] focus:outline-none focus:border-[var(--accent-color)]"
+              />
+              <select
+                value={newPriority}
+                onChange={(e) => setNewPriority(e.target.value as TaskPriority)}
+                className="px-2 py-1.5 text-xs bg-[var(--card-bg)] border border-[var(--card-border)] rounded-md text-[var(--foreground)]"
               >
-                <td className="py-2.5 px-4 text-xs font-medium text-[var(--foreground)]">
-                  {subtask.title}
-                </td>
-                <td className="py-2.5 px-4">
-                  <Badge variant={subtask.priority}>{subtask.priority.toUpperCase()}</Badge>
-                </td>
-                <td className="py-2.5 px-4">
-                  <div className="flex items-center -space-x-1">
-                    {subtask.members && subtask.members.length > 0 ? (
-                      subtask.members.map((m) => (
-                        <Avatar key={m.id} name={m.fullName} src={m.avatarUrl} size="sm" />
-                      ))
-                    ) : (
-                      <span className="text-[10px] text-[var(--muted-text)]">—</span>
-                    )}
-                  </div>
-                </td>
-                <td className="py-2.5 px-4 text-xs text-[var(--muted-text)]">
-                  {subtask.dueDate ? (
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      <span>{new Date(subtask.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
-                    </div>
-                  ) : (
-                    '—'
-                  )}
-                </td>
-                <td className="py-2.5 px-4 text-right">
-                  <button
-                    onClick={() => onDeleteSubtask?.(subtask.id)}
-                    className="p-1 text-[var(--muted-text)] hover:text-rose-500 transition-colors"
-                    title="Delete subtask"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
+              <button type="button" onClick={() => setIsAdding(false)} className="text-xs text-[var(--muted-text)]">Cancel</button>
+              <button type="submit" disabled={loading} className="px-3 py-1.5 text-xs font-medium accent-bg text-white rounded-md hover:opacity-90">
+                {loading ? 'Adding...' : 'Add'}
+              </button>
+            </form>
+          )}
 
-            {subtasks.length === 0 && !isAdding && (
-              <tr>
-                <td colSpan={5} className="py-6 text-center text-xs text-[var(--muted-text)] italic">
-                  No subtasks added yet
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        {/* Add Subtask Form Row */}
-        {isAdding && (
-          <form onSubmit={handleAddSubmit} className="p-3 border-t border-[var(--card-border)] flex items-center gap-2">
-            <input
-              type="text"
-              placeholder="Enter subtask title..."
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              autoFocus
-              className="flex-1 px-3 py-1.5 text-xs bg-[var(--background)] border border-[var(--card-border)] rounded-md text-[var(--foreground)] focus:outline-none focus:border-[var(--accent-color)]"
-            />
-            <select
-              value={newPriority}
-              onChange={(e) => setNewPriority(e.target.value as TaskPriority)}
-              className="px-2 py-1.5 text-xs bg-[var(--background)] border border-[var(--card-border)] rounded-md text-[var(--foreground)]"
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
-            </select>
-            <button
-              type="button"
-              onClick={() => setIsAdding(false)}
-              className="px-3 py-1.5 text-xs text-[var(--muted-text)] hover:text-[var(--foreground)]"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-1.5 text-xs font-medium accent-bg text-white rounded-md hover:opacity-90"
-            >
-              {loading ? 'Adding...' : 'Add'}
-            </button>
-          </form>
-        )}
-      </div>
+          {/* + Add Subtasks */}
+          <button
+            onClick={() => setIsAdding(true)}
+            className="flex items-center gap-1.5 mt-2 text-xs text-[var(--muted-text)] hover:text-[var(--foreground)] transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Subtasks
+          </button>
+        </>
+      )}
     </div>
   );
 }
