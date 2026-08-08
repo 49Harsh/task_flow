@@ -1,0 +1,1 @@
+export type { Subtask } from '@prisma/client';

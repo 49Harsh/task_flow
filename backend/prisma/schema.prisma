@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Theme {
+  light
+  dark
+}
+
+enum TaskStatus {
+  todo
+  doing
+  completed
+  on_hold
+  backlog
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+enum CommentType {
+  comment
+  system_update
+}
+
+model User {
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  email            String     @unique
+  fullName         String
+  title            String?
+  username         String?
+  avatarUrl        String?
+  isGuest          Boolean    @default(true)
+  theme            Theme      @default(light)
+  accentColor      String     @default("#f26b38")
+  createdAt        DateTime   @default(now())
+  ownedWorkspace   Workspace?
+  reportedTasks    Task[]     @relation("TaskReporter")
+  taskMemberOf     Task[]     @relation("TaskMembers", fields: [taskMemberIds], references: [id])
+  taskMemberIds    String[]   @db.ObjectId
+  subtaskMemberOf  Subtask[]  @relation("SubtaskMembers", fields: [subtaskMemberIds], references: [id])
+  subtaskMemberIds String[]   @db.ObjectId
+  comments         Comment[]
+}
+
+model Workspace {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  avatarUrl String?
+  ownerId   String    @unique @db.ObjectId
+  owner     User      @relation(fields: [ownerId], references: [id])
+  projects  Project[]
+  labels    Label[]
+  createdAt DateTime  @default(now())
+}
+
+model Project {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  workspaceId String    @db.ObjectId
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  tasks       Task[]
+  createdAt   DateTime  @default(now())
+}
+
+model Task {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String       @default("")
+  status        TaskStatus   @default(todo)
+  priority      TaskPriority @default(medium)
+  dueDate       DateTime?
+  position      Int          @default(0)
+  projectId     String       @db.ObjectId
+  project       Project      @relation(fields: [projectId], references: [id])
+  reporterId    String       @db.ObjectId
+  reporter      User         @relation("TaskReporter", fields: [reporterId], references: [id])
+  memberIds     String[]     @db.ObjectId
+  members       User[]       @relation("TaskMembers", fields: [memberIds], references: [id])
+  labelIds      String[]     @db.ObjectId
+  labels        Label[]      @relation("TaskLabels", fields: [labelIds], references: [id])
+  resourceLinks String[]
+  teams         String[]
+  subtasks      Subtask[]
+  comments      Comment[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([projectId, status, position])
+}
+
+model Label {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  color       String
+  workspaceId String    @db.ObjectId
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  taskIds     String[]  @db.ObjectId
+  tasks       Task[]    @relation("TaskLabels", fields: [taskIds], references: [id])
+
+  @@unique([workspaceId, name])
+}
+
+model Subtask {
+  id        String       @id @default(auto()) @map("_id") @db.ObjectId
+  taskId    String       @db.ObjectId
+  task      Task         @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  title     String
+  priority  TaskPriority @default(medium)
+  dueDate   DateTime?
+  position  Int          @default(0)
+  memberIds String[]     @db.ObjectId
+  members   User[]       @relation("SubtaskMembers", fields: [memberIds], references: [id])
+  createdAt DateTime     @default(now())
+
+  @@index([taskId, position])
+}
+
+model Comment {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  taskId    String      @db.ObjectId
+  task      Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId  String      @db.ObjectId
+  author    User        @relation(fields: [authorId], references: [id])
+  content   String
+  type      CommentType @default(comment)
+  createdAt DateTime    @default(now())
+
+  @@index([taskId, createdAt])
+}
